@@ -1,0 +1,15 @@
+{
+  "name": "Absen Piket Pondok Putra",
+  "short_name": "Absen Piket",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#202328",
+  "theme_color": "#202328",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3588/3588658.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
