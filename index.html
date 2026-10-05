@@ -147,7 +147,7 @@ textarea{min-height:145px;resize:vertical}
   border-radius:8px;font-size:13px;margin-left:8px;cursor:pointer;
 }
 
-/* REKAP */
+/* REKAP & AUTO BUTTONS */
 .search{
   width:100%;padding:17px 22px;border:2px solid #444;border-radius:18px;
   background:#111;color:white;margin-bottom:16px;
@@ -155,15 +155,38 @@ textarea{min-height:145px;resize:vertical}
 .filter{width:100%;margin-bottom:16px}
 .export{
   width:100%;padding:17px;border:0;border-radius:18px;background:#202733;
-  color:var(--purple);font-weight:800;font-size:20px;margin-bottom:25px;
+  color:var(--purple);font-weight:800;font-size:20px;margin-bottom:16px;
 }
+.btn-group-auto{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:25px;
+}
+.btn-auto{
+  padding:15px 10px;border:0;border-radius:16px;
+  font-weight:800;font-size:16px;color:#fff;
+  box-shadow:0 4px 10px #0004;
+  transition:transform 0.1s;
+}
+.btn-auto:active{transform:scale(.97)}
+.btn-auto.pagi{background:#d9534f;}
+.btn-auto.sore{background:#c9302c;}
+
 .table-wrap{overflow:auto;border:2px solid #424242;border-radius:22px;margin-bottom:20px}
-table{border-collapse:collapse;width:900px;min-width:100%;font-size:15px}
+.table-wrap.danger{border-color:#732b2b;}
+.table-wrap.danger th{background:#2a1414;color:#ff8c8c;}
+
+table{border-collapse:collapse;width:950px;min-width:100%;font-size:15px}
 th,td{padding:14px 18px;border-bottom:2px solid #383838;text-align:left;white-space:nowrap}
 th{background:#191a1c;font-size:18px}
 .badge{padding:5px 9px;border-radius:12px}
 .badge.hadir{color:#69db9a}.badge.izin{color:#ffd06e}.badge.sakit{color:#8fc2ff}.badge.tidak{color:#ff8c8c}
 .empty{color:#888;text-align:center;padding:25px}
+
+.btn-del-rekap{
+  background:#d9534f;color:#fff;border:0;padding:6px 12px;
+  border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;
+  transition:background 0.2s;
+}
+.btn-del-rekap:hover{background:#c9302c}
 
 footer{text-align:center;color:#8295b4;font-size:18px;padding:0 20px 35px}
 .btn-logout{
@@ -193,6 +216,7 @@ footer{text-align:center;color:#8295b4;font-size:18px;padding:0 20px 35px}
   .stat{padding:20px}
   .stat .name{font-size:18px}
   .person{grid-template-columns:1fr 1.25fr}
+  .btn-group-auto{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -339,27 +363,57 @@ footer{text-align:center;color:#8295b4;font-size:18px;padding:0 20px 35px}
   </select>
   <button class="export" type="button" onclick="exportCSV()">📤 Export CSV</button>
 
-  <!-- TABEL PIKET PAGI -->
-  <h3>☀️ Rekap Piket Pagi</h3>
+  <!-- TOMBOL OTOMATIS TANDAI TIDAK HADIR -->
+  <div class="btn-group-auto">
+    <button class="btn-auto pagi" type="button" onclick="otomatisTidakHadir('Pagi')">⚡ Auto 'Tidak Hadir' Piket Pagi</button>
+    <button class="btn-auto sore" type="button" onclick="otomatisTidakHadir('Sore')">⚡ Auto 'Tidak Hadir' Piket Sore</button>
+  </div>
+
+  <!-- TABEL PIKET PAGI (HADIR/IZIN/SAKIT) -->
+  <h3>☀️ Rekap Piket Pagi (Hadir / Izin / Sakit)</h3>
   <div class="table-wrap">
     <table>
       <thead><tr>
         <th>Tanggal</th><th>Jam</th><th>Kelas</th><th>Nama</th>
-        <th>Bagian Piket</th><th>Status</th><th>Catatan</th>
+        <th>Bagian Piket</th><th>Status</th><th>Catatan</th><th>Aksi</th>
       </tr></thead>
       <tbody id="rekapPagi"></tbody>
     </table>
   </div>
 
-  <!-- TABEL PIKET SORE -->
-  <h3>🌆 Rekap Piket Sore</h3>
+  <!-- TABEL PIKET SORE (HADIR/IZIN/SAKIT) -->
+  <h3>🌆 Rekap Piket Sore (Hadir / Izin / Sakit)</h3>
   <div class="table-wrap">
     <table>
       <thead><tr>
         <th>Tanggal</th><th>Jam</th><th>Kelas</th><th>Nama</th>
-        <th>Bagian Piket</th><th>Status</th><th>Catatan</th>
+        <th>Bagian Piket</th><th>Status</th><th>Catatan</th><th>Aksi</th>
       </tr></thead>
       <tbody id="rekapSore"></tbody>
+    </table>
+  </div>
+
+  <!-- TABEL KHUSUS TIDAK HADIR PAGI -->
+  <h3 style="color:#ff8c8c;">❌ Rekap Santri Tidak Hadir — Piket Pagi</h3>
+  <div class="table-wrap danger">
+    <table>
+      <thead><tr>
+        <th>Tanggal</th><th>Jam</th><th>Kelas</th><th>Nama</th>
+        <th>Bagian Piket</th><th>Status</th><th>Catatan</th><th>Aksi</th>
+      </tr></thead>
+      <tbody id="rekapTidakHadirPagi"></tbody>
+    </table>
+  </div>
+
+  <!-- TABEL KHUSUS TIDAK HADIR SORE -->
+  <h3 style="color:#ff8c8c;">❌ Rekap Santri Tidak Hadir — Piket Sore</h3>
+  <div class="table-wrap danger">
+    <table>
+      <thead><tr>
+        <th>Tanggal</th><th>Jam</th><th>Kelas</th><th>Nama</th>
+        <th>Bagian Piket</th><th>Status</th><th>Catatan</th><th>Aksi</th>
+      </tr></thead>
+      <tbody id="rekapTidakHadirSore"></tbody>
     </table>
   </div>
 
@@ -370,7 +424,7 @@ footer{text-align:center;color:#8295b4;font-size:18px;padding:0 20px 35px}
       <table>
         <thead><tr>
           <th>Tanggal</th><th>Jam</th><th>Kelas</th><th>Nama</th>
-          <th>Bagian Piket</th><th>Status</th><th>Waktu</th><th>Catatan</th>
+          <th>Bagian Piket</th><th>Status</th><th>Waktu</th><th>Catatan</th><th>Aksi</th>
         </tr></thead>
         <tbody id="rekapLainnya"></tbody>
       </table>
@@ -577,6 +631,19 @@ async function hapusAnggota(id){
   }
 }
 
+/* FUNGSI HAPUS REKAP ABSEN BY ID */
+async function hapusRekap(id, nama){
+  if(!confirm(`Apakah Anda yakin ingin menghapus data rekap untuk "${nama}"?`)) return;
+  try {
+    const { error } = await supabaseClient.from(TABLE_ABSEN).delete().eq('id', id);
+    if(error) throw error;
+    alert("✅ Rekap berhasil dihapus!");
+    await loadRemoteData();
+  } catch(err) {
+    alert("❌ Gagal menghapus rekap: " + (err.message || "Terjadi kesalahan"));
+  }
+}
+
 $("formTambahAnggota").addEventListener("submit", async e => {
   e.preventDefault();
   const kelas = $("tambahKelas").value.trim();
@@ -618,7 +685,8 @@ function updateDateFilter(){
 }
 
 function renderRowsHTML(rows, showWaktuCol = false){
-  if(!rows.length) return `<tr><td colspan="${showWaktuCol?8:7}" class="empty">Belum ada data.</td></tr>`;
+  const totalCols = showWaktuCol ? 9 : 8;
+  if(!rows.length) return `<tr><td colspan="${totalCols}" class="empty">Belum ada data.</td></tr>`;
   return rows.map(x=>`
     <tr>
       <td>${esc(x.tanggal)}</td>
@@ -629,6 +697,9 @@ function renderRowsHTML(rows, showWaktuCol = false){
       <td><span class="badge ${x.status==="Hadir"?"hadir":x.status==="Izin"?"izin":x.status==="Sakit"?"sakit":"tidak"}">${esc(x.status)}</span></td>
       ${showWaktuCol ? `<td>${esc(x.waktu || x.waktu_piket || "-")}</td>` : ''}
       <td>${esc(x.catatan||"-")}</td>
+      <td>
+        <button class="btn-del-rekap" onclick="hapusRekap(${x.id}, '${esc(x.nama)}')" title="Hapus Rekap Ini">🗑️ Hapus</button>
+      </td>
     </tr>
   `).join("");
 }
@@ -655,9 +726,19 @@ function render(){
     (!s || x.status===s)
   ).slice().reverse();
 
-  // Pisahkan berdasarkan waktu piket
-  const rowsPagi = filtered.filter(x => (x.waktu || x.waktu_piket) === "Pagi");
-  const rowsSore = filtered.filter(x => (x.waktu || x.waktu_piket) === "Sore");
+  // 1. Rekap Pagi (Hadir, Izin, Sakit)
+  const rowsPagi = filtered.filter(x => (x.waktu || x.waktu_piket) === "Pagi" && x.status !== "Tidak Hadir");
+  
+  // 2. Rekap Sore (Hadir, Izin, Sakit)
+  const rowsSore = filtered.filter(x => (x.waktu || x.waktu_piket) === "Sore" && x.status !== "Tidak Hadir");
+  
+  // 3. Rekap Khusus Tidak Hadir - Pagi
+  const rowsTidakHadirPagi = filtered.filter(x => (x.waktu || x.waktu_piket) === "Pagi" && x.status === "Tidak Hadir");
+
+  // 4. Rekap Khusus Tidak Hadir - Sore
+  const rowsTidakHadirSore = filtered.filter(x => (x.waktu || x.waktu_piket) === "Sore" && x.status === "Tidak Hadir");
+
+  // 5. Waktu Lainnya (Siang / Malam) jika ada
   const rowsLainnya = filtered.filter(x => {
     const w = x.waktu || x.waktu_piket;
     return w !== "Pagi" && w !== "Sore";
@@ -665,6 +746,8 @@ function render(){
 
   $("rekapPagi").innerHTML = renderRowsHTML(rowsPagi);
   $("rekapSore").innerHTML = renderRowsHTML(rowsSore);
+  $("rekapTidakHadirPagi").innerHTML = renderRowsHTML(rowsTidakHadirPagi);
+  $("rekapTidakHadirSore").innerHTML = renderRowsHTML(rowsTidakHadirSore);
 
   if(rowsLainnya.length > 0){
     $("secLainnya").style.display = "block";
@@ -702,6 +785,56 @@ async function submitData(item){
   if(error) throw error;
   await loadRemoteData();
   return true;
+}
+
+/* FUNGSI OTOMATIS MEMASUKKAN SANTRI YANG BELUM ABSEN KE REKAP "TIDAK HADIR" */
+async function otomatisTidakHadir(waktuTarget){
+  const t = $("tanggalFilter").value || dateISO();
+  
+  // Ambil daftar unik santri yang SUDAH absen untuk tanggal & waktu ini
+  const submittedSet = new Set(
+    data
+      .filter(x => x.tanggal === t && (x.waktu === waktuTarget || x.waktu_piket === waktuTarget))
+      .map(x => `${x.kelas}___${x.nama}`)
+  );
+
+  // Cari santri dari DAFTAR_NAMA yang BELUM absen
+  const missingSantri = DAFTAR_NAMA.filter(x => !submittedSet.has(`${x.kelas}___${x.nama}`));
+
+  if(missingSantri.length === 0){
+    alert(`✅ Semua santri sudah mengisi/tercatat absen Piket ${waktuTarget} pada tanggal ini!`);
+    return;
+  }
+
+  const confirmMsg = `Ditemukan ${missingSantri.length} santri yang BELUM absen Piket ${waktuTarget}.\n\nYakin ingin memasukkan ${missingSantri.length} santri ini secara otomatis ke rekap "Tidak Hadir"?`;
+  if(!confirm(confirmMsg)) return;
+
+  const d = new Date();
+  const jamNow = timeNow(d);
+
+  // Buat array data santri yang tidak absen
+  const itemsToInsert = missingSantri.map(s => ({
+    tanggal: t,
+    jam: jamNow,
+    kelas: s.kelas,
+    nama: s.nama,
+    bagian: s.bagian,
+    status: "Tidak Hadir",
+    waktu: waktuTarget,
+    waktu_piket: waktuTarget,
+    catatan: "Otomatis sistem (Tidak Absen)"
+  }));
+
+  try {
+    const { error } = await supabaseClient.from(TABLE_ABSEN).insert(itemsToInsert);
+    if(error) throw error;
+
+    alert(`✅ Berhasil menambahkan ${itemsToInsert.length} santri ke rekap "Tidak Hadir" (Piket ${waktuTarget})!`);
+    await loadRemoteData();
+  } catch(err) {
+    console.error(err);
+    alert("❌ Gagal menyimpan data otomatis: " + (err.message || "Terjadi kesalahan"));
+  }
 }
 
 $("kelas").addEventListener("change",fillNames);
