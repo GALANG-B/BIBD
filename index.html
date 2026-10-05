@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Absen Piket Pondok Putra</title>
-<link rel="manifest" href="/manifest.json">
+
+<!-- Meta tag Web App Mode -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#202328">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,6 +88,7 @@ button{cursor:pointer}
   box-shadow:0 12px 35px #0005;
 }
 .card h2{font-size:31px;margin:0 0 22px;line-height:1.1}
+.card h3{font-size:24px;margin:22px 0 12px;color:var(--purple);display:flex;align-items:center;gap:8px}
 .center{text-align:center}
 .clock{font-family:Arial,sans-serif;font-size:58px;font-weight:800;letter-spacing:1px}
 .date{font-size:25px;color:var(--muted);margin:3px 0 25px}
@@ -151,7 +157,7 @@ textarea{min-height:145px;resize:vertical}
   width:100%;padding:17px;border:0;border-radius:18px;background:#202733;
   color:var(--purple);font-weight:800;font-size:20px;margin-bottom:25px;
 }
-.table-wrap{overflow:auto;border:2px solid #424242;border-radius:22px}
+.table-wrap{overflow:auto;border:2px solid #424242;border-radius:22px;margin-bottom:20px}
 table{border-collapse:collapse;width:900px;min-width:100%;font-size:15px}
 th,td{padding:14px 18px;border-bottom:2px solid #383838;text-align:left;white-space:nowrap}
 th{background:#191a1c;font-size:18px}
@@ -289,7 +295,7 @@ footer{text-align:center;color:#8295b4;font-size:18px;padding:0 20px 35px}
   <form id="formTambahAnggota" class="form-grid">
     <div>
       <label>Kelas</label>
-      <input type="text" id="tambahKelas" placeholder="Contoh: Kelas 7, 8" required>
+      <input type="text" id="tambahKelas" placeholder="Contoh: Kelas 7" required>
     </div>
     <div>
       <label>Nama Santri</label>
@@ -333,15 +339,44 @@ footer{text-align:center;color:#8295b4;font-size:18px;padding:0 20px 35px}
   </select>
   <button class="export" type="button" onclick="exportCSV()">📤 Export CSV</button>
 
+  <!-- TABEL PIKET PAGI -->
+  <h3>☀️ Rekap Piket Pagi</h3>
   <div class="table-wrap">
     <table>
       <thead><tr>
         <th>Tanggal</th><th>Jam</th><th>Kelas</th><th>Nama</th>
-        <th>Bagian Piket</th><th>Status</th><th>Waktu Piket</th><th>Catatan</th>
+        <th>Bagian Piket</th><th>Status</th><th>Catatan</th>
       </tr></thead>
-      <tbody id="rekap"></tbody>
+      <tbody id="rekapPagi"></tbody>
     </table>
   </div>
+
+  <!-- TABEL PIKET SORE -->
+  <h3>🌆 Rekap Piket Sore</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Tanggal</th><th>Jam</th><th>Kelas</th><th>Nama</th>
+        <th>Bagian Piket</th><th>Status</th><th>Catatan</th>
+      </tr></thead>
+      <tbody id="rekapSore"></tbody>
+    </table>
+  </div>
+
+  <!-- TABEL WAKTU LAIN (OPTIONAL: SIANG/MALAM) -->
+  <div id="secLainnya" style="display:none;">
+    <h3>🌙 Rekap Piket Lainnya (Siang / Malam)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Tanggal</th><th>Jam</th><th>Kelas</th><th>Nama</th>
+          <th>Bagian Piket</th><th>Status</th><th>Waktu</th><th>Catatan</th>
+        </tr></thead>
+        <tbody id="rekapLainnya"></tbody>
+      </table>
+    </div>
+  </div>
+
 </section>
 
 <footer>
@@ -365,40 +400,48 @@ const TABLE_ANGGOTA = "anggota_piket";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const DEFAULT_NAMA = [
-  {kelas:"Kelas 7, 8", nama:"Kholis", bagian:"kamar mandi 4"},
-  {kelas:"Kelas 7, 8", nama:"Walid", bagian:"kamar mandi 4"},
-  {kelas:"Kelas 7, 8", nama:"Adip", bagian:"kamar mandi 4"},
-  {kelas:"Kelas 7, 8", nama:"Nizam", bagian:"kamar mandi 4"},
-  {kelas:"Kelas 7, 8", nama:"Hasan", bagian:"kamar mandi 4"},
-  {kelas:"Kelas 7, 8", nama:"Rehan", bagian:"kamar mandi 6"},
-  {kelas:"Kelas 7, 8", nama:"Andika", bagian:"kamar mandi 6"},
-  {kelas:"Kelas 7, 8", nama:"Zidan", bagian:"kamar mandi 2"},
-  {kelas:"Kelas 7, 8", nama:"Raziq", bagian:"kamar mandi 2"},
-  {kelas:"Kelas 7, 8", nama:"Bagas", bagian:"isah isah"},
-  {kelas:"Kelas 7, 8", nama:"Bagus", bagian:"latar dpn kantor"},
-  {kelas:"Kelas 7, 8", nama:"Rafka", bagian:"teras ruang barat A"},
-  {kelas:"Kelas 7, 8", nama:"Java", bagian:"teras ruang barat B"},
-  {kelas:"Kelas 7, 8", nama:"Sofa", bagian:"teras ruang barat B"},
-  {kelas:"Kelas 7, 8", nama:"Basith", bagian:"ruang barat selatan"},
-  {kelas:"Kelas 7, 8", nama:"Alfan", bagian:"ruang barat tengah"},
-  {kelas:"Kelas 7, 8", nama:"Radit", bagian:"lantai kuning"},
-  {kelas:"Kelas 7, 8", nama:"Wafa", bagian:"lantai kuning"},
-  {kelas:"Kelas 7, 8", nama:"Akbar", bagian:"garasi smping masjid"},
-  {kelas:"Kelas 7, 8", nama:"Kenzi", bagian:"teras ruang brt A"},
-  {kelas:"Kelas 7, 8", nama:"Qowi", bagian:"isah²"},
-  {kelas:"Kelas 7, 8", nama:"Ilyas", bagian:"masjid"},
-  {kelas:"Kelas 7, 8", nama:"Ilham", bagian:"masjid"},
-  {kelas:"Kelas 7, 8", nama:"Paiz", bagian:"latar dpn bngunan"},
-  {kelas:"Kelas 7, 8", nama:"Hakim", bagian:"isah²"},
-  {kelas:"Kelas 7, 8", nama:"Farhan", bagian:"latar depan makam"},
-  {kelas:"Kelas 9, 10", nama:"Hudna", bagian:"latar dpn kmr"},
-  {kelas:"Kelas 9, 10", nama:"Adam", bagian:"masjid"},
-  {kelas:"Kelas 9, 10", nama:"Kamal", bagian:"masjid"},
-  {kelas:"Kelas 9, 10", nama:"Syahmur", bagian:"lantai hijau"},
-  {kelas:"Kelas 9, 10", nama:"Subhan", bagian:"ngambil kayu bakar"},
-  {kelas:"Kelas 9, 10", nama:"Bagus", bagian:"ngambil kayu bakar"},
-  {kelas:"Kelas 9, 10", nama:"Wildan", bagian:"makam sekitar"},
-  {kelas:"Kelas 9, 10", nama:"Dava", bagian:"km 6 sekitar"}
+  // Kelas 7
+  {kelas:"Kelas 7", nama:"Java", bagian:"teras ruang barat B"},
+  {kelas:"Kelas 7", nama:"Sofa", bagian:"teras ruang barat B"},
+  {kelas:"Kelas 7", nama:"Rafka", bagian:"teras ruang barat A"},
+
+  // Kelas 8
+  {kelas:"Kelas 8", nama:"Kholis", bagian:"kamar mandi 4"},
+  {kelas:"Kelas 8", nama:"Walid", bagian:"kamar mandi 4"},
+  {kelas:"Kelas 8", nama:"Adib", bagian:"kamar mandi 4"},
+  {kelas:"Kelas 8", nama:"Rehan", bagian:"kamar mandi 6"},
+  {kelas:"Kelas 8", nama:"Bagus", bagian:"latar dpn kantor"},
+  {kelas:"Kelas 8", nama:"Bagas", bagian:"isah isah"},
+  {kelas:"Kelas 8", nama:"Hasan", bagian:"kamar mandi 4"},
+  {kelas:"Kelas 8", nama:"Nizam", bagian:"kamar mandi 4"},
+  {kelas:"Kelas 8", nama:"Zidan", bagian:"kamar mandi 2"},
+  {kelas:"Kelas 8", nama:"Raziq", bagian:"kamar mandi 2"},
+  {kelas:"Kelas 8", nama:"Andhika", bagian:"kamar mandi 6"},
+
+  // Kelas 9
+  {kelas:"Kelas 9", nama:"Hudha", bagian:"latar dpn kmr"},
+  {kelas:"Kelas 9", nama:"Adam", bagian:"masjid"},
+  {kelas:"Kelas 9", nama:"Sahrur", bagian:"lantai hijau"},
+  {kelas:"Kelas 9", nama:"Alfan", bagian:"ruang barat tengah"},
+  {kelas:"Kelas 9", nama:"Bagus", bagian:"ngambil kayu bakar"},
+  {kelas:"Kelas 9", nama:"Subhan", bagian:"ngambil kayu bakar"},
+  {kelas:"Kelas 9", nama:"Wildan", bagian:"makam sekitar"},
+  {kelas:"Kelas 9", nama:"Basith", bagian:"ruang barat selatan"},
+  {kelas:"Kelas 9", nama:"Dava", bagian:"km 6 sekitar"},
+  {kelas:"Kelas 9", nama:"Kamal", bagian:"masjid"},
+
+  // Kelas 10
+  {kelas:"Kelas 10", nama:"Radit", bagian:"lantai kuning"},
+  {kelas:"Kelas 10", nama:"Wafa", bagian:"lantai kuning"},
+  {kelas:"Kelas 10", nama:"Ilham", bagian:"masjid"},
+  {kelas:"Kelas 10", nama:"Ilyas", bagian:"masjid"},
+  {kelas:"Kelas 10", nama:"Akbar", bagian:"garasi smping masjid"},
+  {kelas:"Kelas 10", nama:"Qowi", bagian:"isah²"},
+  {kelas:"Kelas 10", nama:"Kenzi", bagian:"teras ruang brt A"},
+  {kelas:"Kelas 10", nama:"Faiz", bagian:"latar dpn bngunan"},
+  {kelas:"Kelas 10", nama:"Hudha", bagian:"latar dpn kmr"},
+  {kelas:"Kelas 10", nama:"Hakim", bagian:"isah²"},
+  {kelas:"Kelas 10", nama:"Farhan", bagian:"latar depan makam"}
 ];
 
 let remoteAnggota = [];
@@ -574,6 +617,22 @@ function updateDateFilter(){
   }).join("");
 }
 
+function renderRowsHTML(rows, showWaktuCol = false){
+  if(!rows.length) return `<tr><td colspan="${showWaktuCol?8:7}" class="empty">Belum ada data.</td></tr>`;
+  return rows.map(x=>`
+    <tr>
+      <td>${esc(x.tanggal)}</td>
+      <td>${esc(x.jam)}</td>
+      <td>${esc(x.kelas)}</td>
+      <td>${esc(x.nama)}</td>
+      <td>${esc(x.bagian)}</td>
+      <td><span class="badge ${x.status==="Hadir"?"hadir":x.status==="Izin"?"izin":x.status==="Sakit"?"sakit":"tidak"}">${esc(x.status)}</span></td>
+      ${showWaktuCol ? `<td>${esc(x.waktu || x.waktu_piket || "-")}</td>` : ''}
+      <td>${esc(x.catatan||"-")}</td>
+    </tr>
+  `).join("");
+}
+
 function render(){
   updateDateFilter();
 
@@ -589,21 +648,30 @@ function render(){
   const k=$("kelasFilter").value;
   const s=$("statusFilter").value;
 
-  const rows=data.filter(x=>
+  const filtered = data.filter(x=>
     (!q || (x.nama && x.nama.toLowerCase().includes(q))) &&
     (!t || x.tanggal===t) &&
     (!k || x.kelas===k) &&
     (!s || x.status===s)
   ).slice().reverse();
 
-  $("rekap").innerHTML=rows.length ? rows.map(x=>`
-    <tr>
-      <td>${esc(x.tanggal)}</td><td>${esc(x.jam)}</td><td>${esc(x.kelas)}</td>
-      <td>${esc(x.nama)}</td><td>${esc(x.bagian)}</td>
-      <td><span class="badge ${x.status==="Hadir"?"hadir":x.status==="Izin"?"izin":x.status==="Sakit"?"sakit":"tidak"}">${esc(x.status)}</span></td>
-      <td>${esc(x.waktu || x.waktu_piket || "-")}</td><td>${esc(x.catatan||"-")}</td>
-    </tr>
-  `).join("") : `<tr><td colspan="8" class="empty">Belum ada data.</td></tr>`;
+  // Pisahkan berdasarkan waktu piket
+  const rowsPagi = filtered.filter(x => (x.waktu || x.waktu_piket) === "Pagi");
+  const rowsSore = filtered.filter(x => (x.waktu || x.waktu_piket) === "Sore");
+  const rowsLainnya = filtered.filter(x => {
+    const w = x.waktu || x.waktu_piket;
+    return w !== "Pagi" && w !== "Sore";
+  });
+
+  $("rekapPagi").innerHTML = renderRowsHTML(rowsPagi);
+  $("rekapSore").innerHTML = renderRowsHTML(rowsSore);
+
+  if(rowsLainnya.length > 0){
+    $("secLainnya").style.display = "block";
+    $("rekapLainnya").innerHTML = renderRowsHTML(rowsLainnya, true);
+  } else {
+    $("secLainnya").style.display = "none";
+  }
 }
 
 async function loadRemoteData(){
