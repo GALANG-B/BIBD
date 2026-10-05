@@ -619,28 +619,37 @@ function renderNames(){
   `).join("");
 }
 
+/* HAPUS ANGGOTA PIKET (INSTANT UI UPDATE) */
 async function hapusAnggota(id){
   if(!confirm("Yakin ingin menghapus santri ini dari daftar?")) return;
+
+  remoteAnggota = remoteAnggota.filter(item => item.id !== id);
+  updateDaftarNama();
+
   try {
     const { error } = await supabaseClient.from(TABLE_ANGGOTA).delete().eq('id', id);
     if(error) throw error;
-    alert("✅ Anggota berhasil dihapus.");
-    await loadAnggota();
+    loadAnggota();
   } catch(err) {
-    alert("❌ Gagal menghapus: " + (err.message || "Terjadi kesalahan"));
+    alert("❌ Gagal menghapus anggota: " + (err.message || "Terjadi kesalahan"));
+    loadAnggota();
   }
 }
 
-/* FUNGSI HAPUS REKAP ABSEN BY ID */
+/* HAPUS REKAP ABSEN (INSTANT UI UPDATE) */
 async function hapusRekap(id, nama){
   if(!confirm(`Apakah Anda yakin ingin menghapus data rekap untuk "${nama}"?`)) return;
+
+  data = data.filter(item => item.id !== id);
+  render();
+
   try {
     const { error } = await supabaseClient.from(TABLE_ABSEN).delete().eq('id', id);
     if(error) throw error;
-    alert("✅ Rekap berhasil dihapus!");
-    await loadRemoteData();
+    loadRemoteData();
   } catch(err) {
     alert("❌ Gagal menghapus rekap: " + (err.message || "Terjadi kesalahan"));
+    loadRemoteData();
   }
 }
 
@@ -726,19 +735,10 @@ function render(){
     (!s || x.status===s)
   ).slice().reverse();
 
-  // 1. Rekap Pagi (Hadir, Izin, Sakit)
   const rowsPagi = filtered.filter(x => (x.waktu || x.waktu_piket) === "Pagi" && x.status !== "Tidak Hadir");
-  
-  // 2. Rekap Sore (Hadir, Izin, Sakit)
   const rowsSore = filtered.filter(x => (x.waktu || x.waktu_piket) === "Sore" && x.status !== "Tidak Hadir");
-  
-  // 3. Rekap Khusus Tidak Hadir - Pagi
   const rowsTidakHadirPagi = filtered.filter(x => (x.waktu || x.waktu_piket) === "Pagi" && x.status === "Tidak Hadir");
-
-  // 4. Rekap Khusus Tidak Hadir - Sore
   const rowsTidakHadirSore = filtered.filter(x => (x.waktu || x.waktu_piket) === "Sore" && x.status === "Tidak Hadir");
-
-  // 5. Waktu Lainnya (Siang / Malam) jika ada
   const rowsLainnya = filtered.filter(x => {
     const w = x.waktu || x.waktu_piket;
     return w !== "Pagi" && w !== "Sore";
@@ -787,18 +787,15 @@ async function submitData(item){
   return true;
 }
 
-/* FUNGSI OTOMATIS MEMASUKKAN SANTRI YANG BELUM ABSEN KE REKAP "TIDAK HADIR" */
 async function otomatisTidakHadir(waktuTarget){
   const t = $("tanggalFilter").value || dateISO();
   
-  // Ambil daftar unik santri yang SUDAH absen untuk tanggal & waktu ini
   const submittedSet = new Set(
     data
       .filter(x => x.tanggal === t && (x.waktu === waktuTarget || x.waktu_piket === waktuTarget))
       .map(x => `${x.kelas}___${x.nama}`)
   );
 
-  // Cari santri dari DAFTAR_NAMA yang BELUM absen
   const missingSantri = DAFTAR_NAMA.filter(x => !submittedSet.has(`${x.kelas}___${x.nama}`));
 
   if(missingSantri.length === 0){
@@ -812,7 +809,6 @@ async function otomatisTidakHadir(waktuTarget){
   const d = new Date();
   const jamNow = timeNow(d);
 
-  // Buat array data santri yang tidak absen
   const itemsToInsert = missingSantri.map(s => ({
     tanggal: t,
     jam: jamNow,
