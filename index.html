@@ -9,9 +9,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#f8fafc">
+<meta name="theme-color" content="#1e40af">
 
-<!-- Google Fonts: Inter (Formal & Bersih) -->
+<!-- Google Fonts: Inter -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,18 +21,19 @@
 
 <style>
 :root{
-  --bg:#f8fafc;
+  --bg:#f1f5f9;
   --surface:#ffffff;
   --border:#cbd5e1;
   --border-light:#e2e8f0;
   --text:#0f172a;
   --text-muted:#64748b;
-  --primary:#2563eb;
+  --primary:#1e40af;       /* Biru Tua Formal */
+  --primary-light:#eff6ff; /* Biru Sangat Muda */
   --primary-hover:#1d4ed8;
+  --accent:#3b82f6;        /* Biru Terang Dinamis */
   --danger:#dc2626;
   --success:#16a34a;
-  --warning:#d97706;
-  --radius:8px;
+  --radius:10px;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -47,16 +48,16 @@ button{cursor:pointer}
 /* SCREEN LOGIN OVERLAY */
 #loginOverlay{
   position:fixed;top:0;left:0;width:100%;height:100%;
-  background:#0f172a88;backdrop-filter:blur(4px);z-index:9999;
+  background:rgba(15, 23, 42, 0.6); backdrop-filter:blur(4px); z-index:9999;
   display:flex;align-items:center;justify-content:center;
   padding:20px;
 }
 .login-card{
-  background:var(--surface);border:1px solid var(--border);
+  background:var(--surface);border-top:4px solid var(--primary);
   border-radius:12px;padding:30px;width:min(380px,100%);
-  box-shadow:0 10px 25px -5px rgba(0,0,0,0.1);text-align:left;
+  box-shadow:0 10px 25px -5px rgba(0,0,0,0.15);text-align:left;
 }
-.login-card h2{margin:0 0 6px;font-size:22px;color:var(--text);font-weight:700}
+.login-card h2{margin:0 0 6px;font-size:22px;color:var(--primary);font-weight:700}
 .login-card p{margin:0 0 20px;color:var(--text-muted);font-size:14px}
 .login-field{margin-bottom:16px}
 .login-field label{display:block;margin-bottom:6px;font-size:13px;font-weight:600;color:var(--text)}
@@ -64,7 +65,7 @@ button{cursor:pointer}
   width:100%;color:var(--text);background:var(--surface);border:1px solid var(--border);
   border-radius:var(--radius);padding:10px 12px;outline:none;font-size:14px;
 }
-.login-field input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
+.login-field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59, 130, 246, 0.15)}
 .btn-login{
   width:100%;padding:10px;border:0;border-radius:var(--radius);background:var(--primary);
   color:white;font-size:14px;font-weight:600;margin-top:6px;transition:background 0.2s;
@@ -75,34 +76,48 @@ button{cursor:pointer}
 /* APP PAGE CONTAINER */
 .page{width:min(900px,100%);margin:auto;padding:24px 16px}
 
-/* HEADER / HERO */
+/* HEADER / HERO - Kombinasi Biru Elegan */
 .header-app{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:12px;padding:24px;margin-bottom:24px;
+  background:linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: white;
+  border-radius:12px;padding:28px 24px;margin-bottom:24px;
   display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
-  box-shadow:0 1px 3px rgba(0,0,0,0.05);
+  box-shadow:0 4px 12px rgba(30, 64, 175, 0.2);
 }
-.header-app h1{font-size:20px;margin:0 0 4px;font-weight:700;color:var(--text)}
-.header-app p{font-size:13px;margin:0;color:var(--text-muted)}
+.header-app h1{font-size:22px;margin:0 0 4px;font-weight:700;color:#ffffff}
+.header-app p{font-size:13px;margin:0;color:rgba(255,255,255,0.85)}
+
+.header-app .connection{
+  background:rgba(255,255,255,0.15); color:#ffffff; border:1px solid rgba(255,255,255,0.3);
+}
+.header-app .connection.offline{background:rgba(220, 38, 38, 0.3); color:#fca5a5;}
 
 /* CARD STYLING */
 .card{
-  background:var(--surface);border:1px solid var(--border);
+  background:var(--surface);border:1px solid var(--border-light);
+  border-top:3px solid var(--accent);
   border-radius:12px;padding:24px;margin-bottom:24px;
-  box-shadow:0 1px 3px rgba(0,0,0,0.05);
+  box-shadow:0 2px 8px rgba(0,0,0,0.03);
+  transition: transform 0.2s;
 }
-.card h2{font-size:17px;margin:0 0 16px;font-weight:600;border-bottom:1px solid var(--border-light);padding-bottom:12px}
+.card:hover{box-shadow:0 4px 12px rgba(59, 130, 246, 0.08)}
+.card h2{
+  font-size:17px;margin:0 0 16px;font-weight:700;color:var(--primary);
+  border-bottom:2px solid var(--primary-light);padding-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
 .card h3{font-size:15px;margin:20px 0 10px;font-weight:600;color:var(--text)}
 
 /* CLOCK & CONNECTION STATUS */
 .clock-box{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px}
-.clock{font-family:monospace;font-size:24px;font-weight:700;color:var(--text)}
-.date{font-size:14px;color:var(--text-muted)}
+.clock{font-family:monospace;font-size:24px;font-weight:700;color:var(--primary)}
+.date{font-size:14px;color:var(--text-muted);font-weight:500}
+
 .connection{
-  font-size:13px;padding:6px 12px;border-radius:20px;background:#f1f5f9;color:var(--success);
-  display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border-light);font-weight:500;
+  font-size:13px;padding:6px 12px;border-radius:20px;background:var(--primary-light); color:var(--success);
+  display:inline-flex;align-items:center;gap:6px;border:1px solid #bfdbfe;font-weight:500;
 }
-.connection.offline{color:var(--danger);background:#fef2f2}
+.connection.offline{color:var(--danger);background:#fef2f2;border-color:#fecaca}
 .dot{width:8px;height:8px;border-radius:50%;background:currentColor}
 
 /* FORM LAYOUT */
@@ -112,33 +127,36 @@ input,select,textarea{
   width:100%;color:var(--text);background:var(--surface);border:1px solid var(--border);
   border-radius:var(--radius);padding:10px 12px;outline:none;font-size:14px;
 }
-input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59, 130, 246, 0.15)}
 .full{grid-column:1/-1}
+
 .info-box{
-  background:#f8fafc;border:1px solid var(--border-light);border-radius:var(--radius);padding:12px 16px;
+  background:var(--primary-light);border:1px solid #bfdbfe;border-radius:var(--radius);padding:12px 16px;
 }
-.info-box small{display:block;color:var(--text-muted);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.info-box small{display:block;color:var(--primary);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
 .info-box strong{display:block;color:var(--text);font-size:15px;margin-top:2px}
 textarea{min-height:90px;resize:vertical}
 
 .btn-submit{
-  padding:10px 20px;border:0;border-radius:var(--radius);background:var(--primary);
+  padding:11px 20px;border:0;border-radius:var(--radius);background:var(--primary);
   color:white;font-size:14px;font-weight:600;transition:background 0.2s;width:100%;
+  box-shadow:0 2px 4px rgba(30, 64, 175, 0.2);
 }
 .btn-submit:hover{background:var(--primary-hover)}
 
-/* STATS GRID */
+/* STATS GRID - Aksen Biru Menarik */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .stat{
-  background:#f8fafc;border:1px solid var(--border-light);border-radius:var(--radius);
-  padding:14px;text-align:center;
+  background:linear-gradient(135deg, #f8fafc 0%, var(--primary-light) 100%);
+  border:1px solid #bfdbfe;border-radius:var(--radius);
+  padding:16px;text-align:center;
 }
-.stat .name{color:var(--text-muted);font-size:11px;font-weight:700;text-transform:uppercase}
-.stat .num{color:var(--text);font-family:monospace;font-size:22px;font-weight:700;margin-top:4px}
+.stat .name{color:var(--primary);font-size:11px;font-weight:700;text-transform:uppercase}
+.stat .num{color:var(--text);font-family:monospace;font-size:24px;font-weight:700;margin-top:4px}
 
 /* NAMES / GROUPS */
 .group{border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
-.group-title{padding:10px 14px;font-size:14px;font-weight:600;background:#f1f5f9;border-bottom:1px solid var(--border-light)}
+.group-title{padding:10px 14px;font-size:14px;font-weight:600;background:var(--primary-light);color:var(--primary);border-bottom:1px solid #bfdbfe}
 .person{
   display:grid;grid-template-columns:1fr 1fr;
   border-bottom:1px solid var(--border-light);font-size:13px;align-items:center;
@@ -155,30 +173,33 @@ textarea{min-height:90px;resize:vertical}
 /* FILTER & TABLES */
 .filter-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px}
 .search{
-  width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);
+  width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);
   background:var(--surface);color:var(--text);font-size:13px;margin-bottom:10px;
 }
+.search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59, 130, 246, 0.15);outline:none}
+
 .export{
-  width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius);background:#f1f5f9;
-  color:var(--text);font-weight:600;font-size:13px;margin-bottom:16px;cursor:pointer;transition:background 0.2s;
+  width:100%;padding:11px;border:1px solid #bfdbfe;border-radius:var(--radius);background:var(--primary-light);
+  color:var(--primary);font-weight:600;font-size:13px;margin-bottom:16px;cursor:pointer;transition:all 0.2s;
 }
-.export:hover{background:#e2e8f0}
+.export:hover{background:#dbeafe}
 
 .btn-group-auto{
   display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;
 }
 .btn-auto{
-  padding:10px;border:1px solid var(--border);border-radius:var(--radius);
+  padding:10px;border:0;border-radius:var(--radius);
   font-weight:600;font-size:13px;color:white;cursor:pointer;
+  box-shadow:0 2px 4px rgba(0,0,0,0.1);
 }
-.btn-auto.pagi{background:#b91c1c;border-color:#991b1b;}
-.btn-auto.sore{background:#7c2d12;border-color:#65280d;}
+.btn-auto.pagi{background:#1d4ed8;}
+.btn-auto.sore{background:#2563eb;}
 .btn-auto:hover{opacity:0.9}
 
 .table-wrap{overflow-x:auto;border:1px solid var(--border-light);border-radius:var(--radius);margin-bottom:16px}
 table{border-collapse:collapse;width:100%;font-size:13px;text-align:left}
 th,td{padding:10px 12px;border-bottom:1px solid var(--border-light);white-space:nowrap}
-th{background:#f8fafc;font-weight:600;color:var(--text);font-size:12px;text-transform:uppercase}
+th{background:var(--primary-light);font-weight:600;color:var(--primary);font-size:12px;text-transform:uppercase}
 tr:last-child td{border-bottom:0}
 
 .badge{padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;display:inline-block}
@@ -199,7 +220,7 @@ footer{text-align:center;color:var(--text-muted);font-size:13px;margin-top:30px;
   background:transparent;border:1px solid var(--border);color:var(--text-muted);
   padding:6px 14px;border-radius:var(--radius);font-size:12px;margin-top:10px;cursor:pointer;
 }
-.btn-logout:hover{background:#f1f5f9;color:var(--text)}
+.btn-logout:hover{background:var(--primary-light);color:var(--primary);border-color:#bfdbfe}
 
 @media(max-width:640px){
   .form-grid{grid-template-columns:1fr}
@@ -248,7 +269,7 @@ footer{text-align:center;color:var(--text-muted);font-size:13px;margin-top:30px;
 <main>
 
 <section class="card">
-  <h2>Formulir Absensi Harian</h2>
+  <h2>📋 Formulir Absensi Harian</h2>
   
   <div class="clock-box">
     <div id="clock" class="clock">00:00:00</div>
@@ -305,7 +326,7 @@ footer{text-align:center;color:var(--text-muted);font-size:13px;margin-top:30px;
 
 <!-- FORM TAMBAH ANGGOTA PIKET BARU -->
 <section class="card">
-  <h2>Tambah Anggota Piket</h2>
+  <h2>➕ Tambah Anggota Piket</h2>
   <form id="formTambahAnggota" class="form-grid">
     <div>
       <label>Kelas</label>
@@ -320,13 +341,13 @@ footer{text-align:center;color:var(--text-muted);font-size:13px;margin-top:30px;
       <input type="text" id="tambahBagian" placeholder="Contoh: Halaman Depan" required>
     </div>
     <div class="full">
-      <button class="btn-submit" type="submit" style="background:#16a34a;">Tambah ke Daftar</button>
+      <button class="btn-submit" type="submit" style="background:#0284c7;">Tambah ke Daftar</button>
     </div>
   </form>
 </section>
 
 <section class="card">
-  <h2>Ringkasan Hari Ini</h2>
+  <h2>📊 Ringkasan Hari Ini</h2>
   <div class="stats">
     <div class="stat"><div class="name">Hadir</div><div id="sumHadir" class="num">0</div></div>
     <div class="stat"><div class="name">Izin</div><div id="sumIzin" class="num">0</div></div>
@@ -336,12 +357,12 @@ footer{text-align:center;color:var(--text-muted);font-size:13px;margin-top:30px;
 </section>
 
 <section class="card">
-  <h2>Daftar Anggota & Bagian Piket</h2>
+  <h2>👥 Daftar Anggota & Bagian Piket</h2>
   <div id="daftarNama"></div>
 </section>
 
 <section class="card">
-  <h2>Rekapitulasi Absensi</h2>
+  <h2>📚 Rekapitulasi Absensi</h2>
   
   <input id="cari" class="search" placeholder="Cari nama santri...">
   
@@ -356,14 +377,14 @@ footer{text-align:center;color:var(--text-muted);font-size:13px;margin-top:30px;
     </select>
   </div>
 
-  <button class="export" type="button" onclick="exportCSV()">Ekspor Data ke CSV</button>
+  <button class="export" type="button" onclick="exportCSV()">📥 Ekspor Data ke CSV</button>
 
   <div class="btn-group-auto">
-    <button class="btn-auto pagi" type="button" onclick="otomatisTidakHadir('Pagi')">Set 'Tidak Hadir' Piket Pagi</button>
-    <button class="btn-auto sore" type="button" onclick="otomatisTidakHadir('Sore')">Set 'Tidak Hadir' Piket Sore</button>
+    <button class="btn-auto pagi" type="button" onclick="otomatisTidakHadir('Pagi')">⚡ Set 'Tidak Hadir' Piket Pagi</button>
+    <button class="btn-auto sore" type="button" onclick="otomatisTidakHadir('Sore')">⚡ Set 'Tidak Hadir' Piket Sore</button>
   </div>
 
-  <h3>Rekap Piket Pagi (Hadir / Izin / Sakit)</h3>
+  <h3>☀️ Rekap Piket Pagi (Hadir / Izin / Sakit)</h3>
   <div class="table-wrap">
     <table>
       <thead><tr>
@@ -374,7 +395,7 @@ footer{text-align:center;color:var(--text-muted);font-size:13px;margin-top:30px;
     </table>
   </div>
 
-  <h3>Rekap Piket Sore (Hadir / Izin / Sakit)</h3>
+  <h3>🌆 Rekap Piket Sore (Hadir / Izin / Sakit)</h3>
   <div class="table-wrap">
     <table>
       <thead><tr>
@@ -385,7 +406,7 @@ footer{text-align:center;color:var(--text-muted);font-size:13px;margin-top:30px;
     </table>
   </div>
 
-  <h3 style="color:var(--danger);">Rekap Tidak Hadir — Piket Pagi</h3>
+  <h3 style="color:var(--danger);">❌ Rekap Tidak Hadir — Piket Pagi</h3>
   <div class="table-wrap">
     <table>
       <thead><tr>
@@ -396,7 +417,7 @@ footer{text-align:center;color:var(--text-muted);font-size:13px;margin-top:30px;
     </table>
   </div>
 
-  <h3 style="color:var(--danger);">Rekap Tidak Hadir — Piket Sore</h3>
+  <h3 style="color:var(--danger);">❌ Rekap Tidak Hadir — Piket Sore</h3>
   <div class="table-wrap">
     <table>
       <thead><tr>
@@ -408,7 +429,7 @@ footer{text-align:center;color:var(--text-muted);font-size:13px;margin-top:30px;
   </div>
 
   <div id="secLainnya" style="display:none;">
-    <h3>Rekap Sesi Lainnya (Siang / Malam)</h3>
+    <h3>🌙 Rekap Sesi Lainnya (Siang / Malam)</h3>
     <div class="table-wrap">
       <table>
         <thead><tr>
